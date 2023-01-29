@@ -44,7 +44,7 @@ def queue_add(usr_id: int, subj: str, name: str):
             return 20
 
     qe.append(array)
-    with open("../queue_data.pkl", "wb") as file:
+    with open("./users_data/queue_data.pkl", "wb") as file:
         pickle.dump(qe, file)
     return 1
 
@@ -70,7 +70,7 @@ def queue_del(usr_id: int, subj: str, name: str):
         return 2
 
     del qe[ind_file]
-    with open("../queue_data.pkl", "wb") as file:
+    with open("./users_data/queue_data.pkl", "wb") as file:
         pickle.dump(qe, file)
 
     return 1

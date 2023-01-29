@@ -3,9 +3,9 @@ from read_check import *
 
 
 # Восстановление очереди в файле
-def queue_repair(queue_copy: list):
-    with open("../queue_data.pkl", "wb") as file:
-        pickle.dump(queue_copy, file)
+def queue_repair(queue_copy_list: list):
+    with open("./users_data/queue_data.pkl", "wb") as file:
+        pickle.dump(queue_copy_list, file)
 
 
 # Тесты

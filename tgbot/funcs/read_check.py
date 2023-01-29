@@ -18,7 +18,7 @@ import pickle
 # Чтение файла subjects_data
 # @return Словарь
 def subjects_read():
-    with open("../../users_data/subjects_data.json", "r", encoding="utf-8") as file:
+    with open("./users_data/subjects_data.json", "r", encoding="utf-8") as file:
         users = json.load(file)
     return users
 
@@ -26,7 +26,7 @@ def subjects_read():
 # Чтение файла users_data
 # @return Словарь
 def users_read():
-    with open("../../users_data/users_data.json", "r", encoding="utf-8") as file:
+    with open("./users_data/users_data.json", "r", encoding="utf-8") as file:
         users = json.load(file)
     return users
 
@@ -34,11 +34,11 @@ def users_read():
 # Чтение очереди из файла
 # @return Прочитанный массив, в случае ошибки None
 def queue_read():
-    if not os.path.isfile("../../users_data/queue_data.pkl"):
+    if not os.path.isfile("./users_data/queue_data.pkl"):
         return None
-    if os.path.getsize("../../users_data/queue_data.pkl") == 0:
+    if os.path.getsize("./users_data/queue_data.pkl") == 0:
         return None
-    with open("../../users_data/queue_data.pkl", "rb") as file:
+    with open("./users_data/queue_data.pkl", "rb") as file:
         return pickle.load(file)
 
 
