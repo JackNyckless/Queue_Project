@@ -19,8 +19,8 @@ import pickle
 # @return Словарь
 def subjects_read():
     with open("./users_data/subjects_data.json", "r", encoding="utf-8") as file:
-        users = json.load(file)
-    return users
+        subjects = json.load(file)
+    return subjects
 
 
 # Чтение файла users_data
@@ -39,7 +39,8 @@ def queue_read():
     if os.path.getsize("./users_data/queue_data.pkl") == 0:
         return None
     with open("./users_data/queue_data.pkl", "rb") as file:
-        return pickle.load(file)
+        queue_req = pickle.load(file)
+    return queue_req
 
 
 # Проверка очереди на корректность.
@@ -48,17 +49,23 @@ def queue_read():
 def queue_check(array: list):
     if array is None:
         return 100
+
+    users = users_read().keys()
+    subjs = subjects_read().keys()
+
     for req in array:
         if len(req) != 4:
             return 12
+
         if type(req[0]) != int or type(req[1]) != str or type(req[2]) != str or type(req[3]) != float:
             return 13
-        users = users_read().keys()
+        
         if str(req[0]) not in users:
             return 14
-        subjs = subjects_read().keys()
+        
         if str(req[1]) not in subjs:
             return 15
+
         if req[3] <= 0:
             return 16
 
@@ -66,14 +73,14 @@ def queue_check(array: list):
 
 
 # Проверка пользователя на валидность данных
-# @param users - Словарь пользователя
+# @param user - Словарь пользователя
 # @return 1 - данные корректны, иначе ошибка
 def user_check(user: dict):
     if not user.get("f_name") or type(user["f_name"]) != str:
         return 3
     if not user.get("l_name") or type(user["l_name"]) != str:
         return 4
-    if user.get("status") is None:
+    if not user.get("status") or type(user["status"]) != str:
         return 5
 
     return 1
@@ -85,16 +92,16 @@ def user_check(user: dict):
 # @return 1 - данные корректны, иначе ошибка
 def users_check(users: dict):
     users_list = users_read()
+
     for user in users:
         if not users_list.get(user):
             return 10
-        try:
-            if int(user) <= 0:
-                return 11
-        except Exception:
-            return 12
-        res = user_check(users[user])
-        if res != 1:
-            return res
+
+        if not user.isdigit():
+            return 11
+
+        rc = user_check(users[user])
+        if rc != 1:
+            return rc
 
     return 1

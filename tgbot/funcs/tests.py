@@ -31,6 +31,19 @@ def main_tests():
         else:
             print("SUCCESS: " + msg)
 
+ # Добавление двух обычных заявок пользователей
+    msg = "Added two different usual requests"
+    if queue_add(users[0], subjects[0], "LR10") != 1 or queue_add(users[1], subjects[2], "LR10") != 1:
+        print("ERROR: " + msg)
+    else:
+        print("SUCCESS: " + msg)
+    # Удаление двух обычных заявок пользователей
+        msg = "Delete two different usual requests"
+        if queue_del(users[1], subjects[2], "LR10") != 1 or queue_del(users[0], subjects[0], "LR10") != 1:
+            print("ERROR: " + msg)
+        else:
+            print("SUCCESS: " + msg)
+
     # Добавление в очередь несуществующего пользователя
     msg = "Added unknown user to queue"
     if queue_add(-1, subjects[0], "LR1") == 1:

@@ -24,28 +24,32 @@ from read_check import *
 # @param name - Описание типа заявки (пример - "ЛР3")
 # @return 1 в случае успеха, иначе ошибка
 def queue_add(usr_id: int, subj: str, name: str):
-    array = [usr_id, subj, name, time.time()]
-    # Проверка на корректность элемента
-    res = queue_check([array])
-    if res != 1:
-        return res
+    request = [usr_id, subj, name, time.time()]
 
-    qe = queue_read()
+    # Проверка на корректность элемента
+    rc = queue_check([request])
+    if rc != 1:
+        return rc
+
+    queue_req = queue_read()
+
     # Проверка на корректность очереди
-    res = queue_check(qe)
-    if res != 1 and qe is not None:
-        return res
-    if qe is None:
-        qe = []
+    rc = queue_check(queue_req)
+    if rc != 1 and queue_req is not None:
+        return rc
+    if queue_req is None:
+        queue_req = []
 
     # Проверка на наличие такого же описания с предметом в очереди
-    for re in qe:
-        if re[0] == array[0] and re[1] == array[1] and re[2] == array[2]:
+    for req in queue_req:
+        if req[0] == request[0] and req[1] == request[1] and req[2] == request[2]:
             return 20
 
-    qe.append(array)
+    queue_req.append(request)
+
     with open("./users_data/queue_data.pkl", "wb") as file:
-        pickle.dump(qe, file)
+        pickle.dump(queue_req, file)
+
     return 1
 
 
@@ -55,23 +59,22 @@ def queue_add(usr_id: int, subj: str, name: str):
 # @param name - Описание типа заявки (пример - "ЛР3")
 # @return 1 в случае успеха, иначе ошибка
 def queue_del(usr_id: int, subj: str, name: str):
-    qe = queue_read()
-    res = queue_check(qe)
-    if res != 1:
-        return res
+    queue_req = queue_read()
+
+    rc = queue_check(queue_req)
+    if rc != 1:
+        return rc
 
     # Поиск подходящего элемента очереди
-    ind_file = -1
-    for i in range(len(qe)):
-        if qe[i][0] == usr_id and qe[i][1] == subj and qe[i][2] == name:
-            ind_file = i
+    for ind, req in enumerate(queue_req):
+        if req[0] == usr_id and req[1] == subj and req[2] == name:
+            del queue_req[ind]
             break
-    if ind_file == -1:
+    else:
         return 2
 
-    del qe[ind_file]
     with open("./users_data/queue_data.pkl", "wb") as file:
-        pickle.dump(qe, file)
+        pickle.dump(queue_req, file)
 
     return 1
 
@@ -81,38 +84,40 @@ def queue_del(usr_id: int, subj: str, name: str):
 # @param subj - Имя предмета (пример - "OOP", None).
 # @return Упорядоченный массив типа [Айди, предмет, описание, время записи] в случае успеха, код ошибки в противном случае
 def queue_make(usr_id: int, subj: str):
+    usr_flag, subj_flag = 0, 0
+
     if usr_id is not None:
-        u_flag = 1
+        usr_flag = 1
         if str(usr_id) not in users_read().keys():
             return 32
-    else:
-        u_flag = 0
+
     if subj is not None:
-        s_flag = 1
+        subj_flag = 1
         if subj not in subjects_read().keys():
             return 33
-    else:
-        s_flag = 0
 
-    qe = queue_read()
-    res = queue_check(qe)
-    if res != 1:
-        return res
-    arr_qe = []
+    queue_req = queue_read()
 
-    for re in qe:
-        if u_flag and re[0] == usr_id and s_flag and re[1] == subj:
-            arr_qe.append(re)
-        elif not s_flag and u_flag and re[0] == usr_id:
-            arr_qe.append(re)
-        elif not u_flag and s_flag and re[1] == subj:
-            arr_qe.append(re)
-        elif not u_flag and not s_flag:
-            arr_qe.append(re)
-    # print(arr_qe)
-    arr_qe.sort(key=lambda x: x[3])
+    rc = queue_check(queue_req)
+    if rc != 1:
+        return rc
 
-    return arr_qe
+    arr_req = []
+
+    for req in queue_req:
+        if usr_flag and req[0] == usr_id and subj_flag and req[1] == subj:
+            arr_req.append(req)
+        elif not subj_flag and usr_flag and req[0] == usr_id:
+            arr_req.append(req)
+        elif not usr_flag and subj_flag and req[1] == subj:
+            arr_req.append(req)
+        else:
+            arr_req.append(req)
+    # print(arr_req)
+
+    arr_req.sort(key=lambda x: x[3])
+
+    return arr_req
 
 
 # Оформление очереди в виде сообщения. Возвращает форматированную строку. Если оба параметра None - возвращается вся очередь
@@ -122,23 +127,27 @@ def queue_make(usr_id: int, subj: str):
 def queue_msg(usr_id: int, subj: str):
     msg = ""
     users = users_read()
-    res = users_check(users)
-    if res != 1:
+
+    rc = users_check(users)
+    if rc != 1:
         return 1
 
-    qe = queue_make(usr_id, subj)
-    if type(qe) != list:
+    queue_req = queue_make(usr_id, subj)
+
+    if type(queue_req) != list:
         return 2
 
     ind = 1
     subjects = subjects_read()
-    for i in qe:
-        # u_info - информация о пользователе в users_data
-        u_info = users[str(i[0])]
-        timestamp = datetime.datetime.fromtimestamp(i[3])
-        u_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-        user_str = "{}. {:8} {}. - {:5} - {:5} - {}\n".format(ind, u_info["f_name"], u_info["l_name"][0], subjects[i[1]], i[2], u_time)
+    for req in queue_req:
+        # usr_info - информация о пользователе в users_data
+        usr_info = users[str(req[0])]
+        timestamp = datetime.datetime.fromtimestamp(req[3])
+        usr_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+
+        user_str = "{}. {:8} {}. - {:5} - {:5} - {}\n".format\
+            (ind, usr_info["f_name"], usr_info["l_name"][0], subjects[req[1]], req[2], usr_time)
         msg += user_str
         ind += 1
 
