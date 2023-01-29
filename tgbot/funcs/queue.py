@@ -107,6 +107,8 @@ def queue_make(usr_id: int, subj: str):
             arr_qe.append(re)
         elif not u_flag and s_flag and re[1] == subj:
             arr_qe.append(re)
+        elif not u_flag and not s_flag:
+            arr_qe.append(re)
     # print(arr_qe)
     arr_qe.sort(key=lambda x: x[3])
 
