@@ -15,7 +15,7 @@
 #
 import time
 import datetime
-from read_check import *
+from tgbot.funcs.read_check import *
 
 
 # Запись очереди в файл. Время генерируется автоматически.
@@ -146,8 +146,8 @@ def queue_msg(usr_id: int, subj: str):
         timestamp = datetime.datetime.fromtimestamp(req[3])
         usr_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-        user_str = "{}. {:8} {}. - {:5} - {:5} - {}\n".format\
-            (ind, usr_info["f_name"], usr_info["l_name"][0], subjects[req[1]], req[2], usr_time)
+        user_str = "{}. {:8} {}. - {:5} - {:5} - {}\n".format(ind, usr_info["f_name"], usr_info["l_name"]
+                                                              [0], subjects[req[1]], req[2], usr_time)
         msg += user_str
         ind += 1
 
