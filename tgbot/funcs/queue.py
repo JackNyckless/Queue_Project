@@ -111,7 +111,7 @@ def queue_make(usr_id: int, subj: str):
             arr_req.append(req)
         elif not usr_flag and subj_flag and req[1] == subj:
             arr_req.append(req)
-        else:
+        elif not usr_flag and not subj_flag:
             arr_req.append(req)
     # print(arr_req)
 
