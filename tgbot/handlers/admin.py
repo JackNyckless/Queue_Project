@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
 from tgbot.keyboards.reply import menu
-from tgbot.funcs.read_check import users_read
+from tgbot.funcs.queue import *
 
 
 async def admin_start(message: Message):
@@ -14,7 +14,19 @@ async def admin_start(message: Message):
 
 
 async def admin_help(message: Message):
-    await message.answer("Список команд:\n\n/users (список студентов)\n/admins (список админов)\n/subjects (список предметов)")
+    await message.answer("Список команд:\n\n/users (список студентов)\n/admins (список админов)\n/subjects (список предметов)\n/queue (проверить очередь)")
+
+
+async def admin_users(message: Message):
+    await message.answer(str(users_read()))
+
+
+async def admin_subjects(message: Message):
+    await message.answer(str(subjects_read()))
+
+
+async def admin_queue(message: Message):
+    await message.answer(str(queue_read()))
 
 
 def register_admin(dp: Dispatcher):
@@ -22,3 +34,9 @@ def register_admin(dp: Dispatcher):
                                 "start"], state="*", is_admin=True)
     dp.register_message_handler(admin_help, commands=[
                                 "help"], state="*", is_admin=True)
+    dp.register_message_handler(admin_users, commands=[
+                                "users"], state="*", is_admin=True)
+    dp.register_message_handler(admin_subjects, commands=[
+                                "subjects"], state="*", is_admin=True)
+    dp.register_message_handler(admin_queue, commands=[
+                                "check_queue"], state="*", is_admin=True)

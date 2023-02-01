@@ -32,7 +32,7 @@ subject_menu = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text="Посмотреть очередь"),
-            KeyboardButton(text="Посмотреть очередь с док-вами"),
+            KeyboardButton(text="Посмотреть очередь с док-вами")
         ],
         [
             KeyboardButton(text="Назад")
@@ -44,7 +44,17 @@ subject_menu = ReplyKeyboardMarkup(
 cancel_menu = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Отмена"),
+            KeyboardButton(text="Отмена")
+        ]
+    ],
+    resize_keyboard=True
+)
+
+confirm_menu = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Да"),
+            KeyboardButton(text="Нет")
         ]
     ],
     resize_keyboard=True
