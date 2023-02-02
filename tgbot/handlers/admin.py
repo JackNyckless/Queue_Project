@@ -39,4 +39,4 @@ def register_admin(dp: Dispatcher):
     dp.register_message_handler(admin_subjects, commands=[
                                 "subjects"], state="*", is_admin=True)
     dp.register_message_handler(admin_queue, commands=[
-                                "check_queue"], state="*", is_admin=True)
+                                "queue"], state="*", is_admin=True)

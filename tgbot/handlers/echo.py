@@ -25,8 +25,6 @@ async def bot_echo(message: types.Message, state: FSMContext):
     if (message.text in list(subjects.values())):
         await state.update_data(subject=list(subjects.keys())[list(
             subjects.values()).index(message.text)])
-        message.text = list(subjects.keys())[list(
-            subjects.values()).index(message.text)]
         await message.answer(f"Вы выбрали предмет: {message.text}", reply_markup=subject_menu)
     elif (message.text == "Назад"):
         await message.answer("Возвращаемся в меню", reply_markup=menu)
@@ -60,7 +58,7 @@ async def bot_echo(message: types.Message, state: FSMContext):
         msg = msg.split("\n")
         works = queue_make(None, subject)
         for i, work in enumerate(works):
-            name = photo_name(message.from_user.id, subject, work[3])
+            name = photo_name(work[0], subject, work[3])
             await message.answer_photo(open(name, 'rb'), caption=msg[i])
     elif (message.text == "Записаться"):
         await Actions.ADD.set()
