@@ -11,6 +11,7 @@ from tgbot.handlers.admin import register_admin
 from tgbot.handlers.echo import register_echo
 from tgbot.handlers.user import register_user
 from tgbot.middlewares.environment import EnvironmentMiddleware
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ async def main():
         level=logging.INFO,
         format=u'%(levelname)-8s [%(asctime)s]   %(name)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
+        filename="bot.log"
     )
     logger.info("Starting bot")
     config = load_config(".env.dist")
