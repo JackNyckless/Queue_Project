@@ -95,6 +95,10 @@ async def bot_add_echo(message: types.Message, state: FSMContext):
         msg = "Вы не прислали фото-доказательство"
     elif not message.text and not message.caption:
         msg = "Вы не приписали к фото название работы"
+    elif "\n" in message.caption:
+        msg = "Вы должны написать название работы в одну строку"
+    elif len(message.caption) > 20:
+        msg = "Слишком длинное название работы"
     else:
         if message.text == "Отмена":
             msg = "Вы отменили запись в очередь ❌"
@@ -121,7 +125,7 @@ async def bot_remove_echo(message: types.Message, state: FSMContext):
         msg = "Некорретный номер работы"
         try:
             num_work = int(message.text)
-            if (num_work > 0 or num_work <= len(works)):
+            if (num_work > 0 and num_work <= len(works)):
                 msg = "Вы уверены? ⚠️"
                 current_menu = confirm_menu
                 await Actions.CONFIRM.set()
