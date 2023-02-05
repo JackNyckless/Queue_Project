@@ -48,7 +48,7 @@ async def admin_cmds(message: Message):
         msg = "Список пользователей:\n"
 
         for ind, user in enumerate(users):
-            msg += "{}. {} {}: {}({})\n".format(ind + 1, users[user]['l_name'],\
+            msg += "{}. {} {}: \n{}({})\n".format(ind + 1, users[user]['l_name'],\
                 users[user]['f_name'], user,users[user]['status'])
 
         await message.answer(msg)
