@@ -62,7 +62,7 @@ async def bot_echo(message: types.Message, state: FSMContext):
         if not msg:
             msg = "Очередь пустая"
         else:
-            msg_split = msg.split("\n")
+            msg_split = msg.split("\t")
             works = queue_make(None, subject)
             for i, work in enumerate(works):
                 name = photo_name(work[0], subject, work[3])

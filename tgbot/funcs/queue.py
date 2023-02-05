@@ -146,7 +146,7 @@ def queue_msg(usr_id: int, subj: str):
         timestamp = datetime.datetime.fromtimestamp(req[3])
         usr_time = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-        user_str = "{}. {:8} {}.  {:5} {:5}\n{}\n".format(ind, usr_info["f_name"], usr_info["l_name"]
+        user_str = "{}. {:8} {}.  {:5} {:5}\n{}\t\n".format(ind, usr_info["f_name"], usr_info["l_name"]
                                                               [0], subjects[req[1]], req[2], usr_time)
         msg += user_str
         ind += 1
