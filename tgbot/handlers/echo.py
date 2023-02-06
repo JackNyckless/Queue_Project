@@ -102,6 +102,8 @@ async def bot_add_echo(message: types.Message, state: FSMContext):
     else:
         if message.text == "Отмена":
             msg = "Вы отменили запись в очередь ❌"
+        elif subject and len(message.photo) != 1:
+            msg = "Вы должны прислать только одно фото для доказательства"
         elif subject:
             queue_add(from_id, subject, message.caption)
             name = photo_name(from_id, subject, queue_make(
