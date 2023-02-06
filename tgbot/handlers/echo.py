@@ -93,17 +93,22 @@ async def bot_add_echo(message: types.Message, state: FSMContext):
 
     if message.text and message.text != "Отмена":
         msg = "Вы не прислали фото-доказательство"
+        msg += "\nПожалуйста, попробуйте снова"
     elif not message.text and not message.caption:
         msg = "Вы не приписали к фото название работы"
+        msg += "\nПожалуйста, попробуйте снова"
     elif "\n" in message.caption:
         msg = "Вы должны написать название работы в одну строку"
+        msg += "\nПожалуйста, попробуйте снова"
     elif len(message.caption) > 20:
-        msg = "Слишком длинное название работы"
+        msg = "Слишком длинное название работы (д.б. менее 20 символов)"
+        msg += "\nПожалуйста, попробуйте снова"
     else:
         if message.text == "Отмена":
             msg = "Вы отменили запись в очередь ❌"
         elif subject and len(message.photo) != 1:
             msg = "Вы должны прислать только одно фото для доказательства"
+            msg += "\nПожалуйста, попробуйте снова"
         elif subject:
             queue_add(from_id, subject, message.caption)
             name = photo_name(from_id, subject, queue_make(
