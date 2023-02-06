@@ -1,3 +1,5 @@
+import time
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import hcode
@@ -32,20 +34,20 @@ async def bot_echo(message: types.Message, state: FSMContext):
     else:
         current_menu = main_menu
 
-    if message.text in list(subjects.values()) and subject == None:
+    if message.text in list(subjects.values()) and subject is None:
         await state.update_data(subject=list(subjects.keys())[list(
             subjects.values()).index(message.text)])
         msg = f"Вы выбрали предмет: {message.text}"
         current_menu = subject_menu
-    elif message.text == "Назад" and subject != None:
+    elif message.text == "Назад" and subject is not None:
         await state.update_data(subject=None)
-        msg = "Возвращаемся в меню"
+        msg = "Выберите действие"
         current_menu = main_menu
-    elif message.text == "Посмотреть свои позиции" and subject == None:
+    elif message.text == "Посмотреть свои позиции" and subject is None:
         msg = queue_msg(from_id, None)
         if not msg:
             msg = "Вы не состоите ни в одной очереди"
-    elif message.text == "Отметить сдачу" and subject == None:
+    elif message.text == "Отметить сдачу" and subject is None:
         if queue_make(from_id, None):
             msg = f"Вот список ваших сдач:\n\n{queue_msg(from_id, None)}\nНапишите номер работы, которую вы уже сдали 🔢"
             await Actions.REMOVE.set()
@@ -53,11 +55,11 @@ async def bot_echo(message: types.Message, state: FSMContext):
         else:
             current_menu = main_menu
             msg = "Вы не состоите ни в одной очереди"
-    elif message.text == "Посмотреть очередь" and subject != None:
+    elif message.text == "Посмотреть очередь" and subject is not None:
         msg = queue_msg(None, subject)
         if not msg:
             msg = "Очередь пустая"
-    elif message.text == "Посмотреть очередь с док-вами" and subject != None:
+    elif message.text == "Посмотреть очередь с док-вами" and subject is not None:
         msg = queue_msg(None, subject)
         if not msg:
             msg = "Очередь пустая"
@@ -67,14 +69,16 @@ async def bot_echo(message: types.Message, state: FSMContext):
             for i, work in enumerate(works):
                 name = photo_name(work[0], subject, work[3])
                 await message.answer_photo(open(name, 'rb'), caption=msg_split[i])
+                time.sleep(1)
             msg = None
-    elif message.text == "Записаться" and subject != None:
+    elif message.text == "Записаться" and subject is not None:
         await Actions.ADD.set()
-        msg = "Введите название работы (лабораторная/домашняя и номер) и прикрепите к сообщению фото-доказательство"
+        msg = "Предмет: " + subjects_read()[subject]
+        msg += "\nВведите название работы (ЛР/ДЗ и номер) и прикрепите к сообщению ОДНО фото-доказательство"
         current_menu = cancel_menu
 
     if msg:
-        await message.answer(msg, reply_markup=current_menu)
+        await message.answer(msg, reply_markup=current_menu, parse_mode="HTML")
     else:
         msg = "Вывел очередь с док-вами"
     if msg == queue_msg(None, subject):
@@ -94,6 +98,10 @@ async def bot_add_echo(message: types.Message, state: FSMContext):
     if message.text and message.text != "Отмена":
         msg = "Вы не прислали фото-доказательство"
         msg += "\nПожалуйста, попробуйте снова"
+    elif message.text and message.text == "Отмена":
+        msg = "Вы отменили запись в очередь ❌"
+        current_menu = main_menu
+        await state.finish()
     elif not message.text and not message.caption:
         msg = "Вы не приписали к фото название работы"
         msg += "\nПожалуйста, попробуйте снова"
@@ -104,17 +112,14 @@ async def bot_add_echo(message: types.Message, state: FSMContext):
         msg = "Слишком длинное название работы (д.б. менее 20 символов)"
         msg += "\nПожалуйста, попробуйте снова"
     else:
-        if message.text == "Отмена":
-            msg = "Вы отменили запись в очередь ❌"
-        elif subject and len(message.photo) != 1:
-            msg = "Вы должны прислать только одно фото для доказательства"
-            msg += "\nПожалуйста, попробуйте снова"
-        elif subject:
+        if subject:
             queue_add(from_id, subject, message.caption)
             name = photo_name(from_id, subject, queue_make(
                 from_id, subject)[-1][3])
             await message.photo[-1].download(destination_file=name)
             msg = "Вы успешно записались ✅"
+        else:
+            msg = "Произошла ошибка, попробуйте снова"
         current_menu = main_menu
         await state.finish()
     await message.answer(msg, reply_markup=current_menu)
@@ -129,17 +134,17 @@ async def bot_remove_echo(message: types.Message, state: FSMContext):
 
     if message.text != "Отмена":
         works = queue_make(from_id, None)
-        msg = "Некорретный номер работы"
+        msg = "Вы ввели некорретный номер работы"
         try:
             num_work = int(message.text)
-            if (num_work > 0 and num_work <= len(works)):
+            if num_work <= 0 or num_work > len(works):
+                await state.finish()
+            else:
                 msg = "Вы уверены? ⚠️"
                 current_menu = confirm_menu
                 await Actions.CONFIRM.set()
                 await state.update_data(work=num_work - 1)
-            else:
-                await state.finish()
-        except:
+        except Exception:
             await state.finish()
     else:
         await state.finish()
