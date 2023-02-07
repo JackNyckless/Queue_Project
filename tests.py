@@ -1,5 +1,4 @@
 from tgbot.funcs.queue import *
-# from read_check import *
 
 
 # Восстановление очереди в файле
